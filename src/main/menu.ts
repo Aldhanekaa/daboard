@@ -54,17 +54,17 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Electron',
+      label: 'KaizenBrowser',
       submenu: [
         {
-          label: 'About ElectronReact',
+          label: 'About KaizenBrowser',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide ElectronReact',
+          label: 'Hide KaizenBrowser',
           accelerator: 'Command+H',
           selector: 'hide:',
         },

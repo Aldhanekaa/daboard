@@ -11,9 +11,10 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, nativeTheme } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -34,6 +35,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
 });
 
 if (process.env.NODE_ENV === 'production') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
@@ -42,13 +44,16 @@ const isDevelopment =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 if (isDevelopment) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   require('electron-debug')();
 }
 
 const installExtensions = async () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const installer = require('electron-devtools-installer');
+  console.log(installer.REDUX_DEVTOOLS);
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = ['REACT_DEVELOPER_TOOLS'];
+  const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS'];
 
   return installer
     .default(
@@ -57,6 +62,8 @@ const installExtensions = async () => {
     )
     .catch(console.log);
 };
+
+console.log(nativeTheme.shouldUseDarkColors);
 
 const createWindow = async () => {
   if (isDevelopment) {
@@ -76,12 +83,37 @@ const createWindow = async () => {
     width: 1024,
     height: 728,
     icon: getAssetPath('icon.png'),
+    resizable: false,
+    fullscreen: true,
+    fullscreenable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-
+  const mainSession = mainWindow.webContents.session;
   mainWindow.loadURL(resolveHtmlPath('index.html'));
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const themeCookie = await mainSession.cookies.get({
+    name: 'theme',
+    domain: 'localhost',
+  });
+
+  mainSession.cookies.set({
+    name: 'theme',
+    // eslint-disable-next-line no-nested-ternary
+    value: themeCookie[0]
+      ? // eslint-disable-next-line no-nested-ternary
+        themeCookie[0].value
+        ? themeCookie[0].value
+        : nativeTheme.shouldUseDarkColors
+        ? 'dark'
+        : 'light'
+      : 'dark',
+    url: 'http://localhost/',
+    expirationDate: 9999999999,
+  });
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -105,6 +137,41 @@ const createWindow = async () => {
   mainWindow.webContents.on('new-window', (event, url) => {
     event.preventDefault();
     shell.openExternal(url);
+  });
+
+  ipcMain.on('setTheme', (event, arg) => {
+    mainSession.cookies.set({
+      name: 'theme',
+      // eslint-disable-next-line no-nested-ternary
+      value: arg,
+      url: 'http://localhost/',
+      expirationDate: 9999999999,
+    });
+    // console.log('bruhh', arg);
+    event.reply('changedThemeMode', arg);
+  });
+
+  ipcMain.on('getModeTheme', async (event) => {
+    // console.log('eh');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const themeCookie = await mainSession.cookies.get({
+      name: 'theme',
+      url: 'http://localhost/',
+      domain: 'localhost',
+    });
+
+    event.reply(
+      'receiveModeTheme',
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      themeCookie[0].value
+    );
+  });
+  ipcMain.on('close-app', () => {
+    console.log('App closed!');
+    app.quit();
   });
 
   // Remove this if your app does not use auto updates

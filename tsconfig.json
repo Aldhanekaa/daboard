@@ -21,7 +21,23 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "outDir": "release/app/dist"
+    "outDir": "release/app/dist",
+    "paths": {
+      "@/theme/*": ["renderer/theme/*"],
+      "@/ts/*": ["ts/*"],
+      "@/pages/*": ["pages/*"],
+      "@/global/*": ["renderer/global/*"],
+      "@utils/*": ["utils/*"],
+      "@/layouts/*": ["layouts/*"],
+      "@/hooks/*": ["hooks/*"],
+      "@/types/*": ["types/*"]
+    }
   },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/components/_dashboard/project/Create/content/CodeBlockComponent.jsx"
+  ],
   "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
 }
