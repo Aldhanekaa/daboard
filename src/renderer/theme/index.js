@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 
 import PropTypes from 'prop-types';
 // material
@@ -19,6 +20,8 @@ import breakpoints from './breakpoints';
 import GlobalStyles from './globalStyles';
 import componentsOverride from './overrides';
 import shadows, { customShadows } from './shadows';
+
+import { SetTheme } from '../global/actions/themeMode.action';
 
 // ----------------------------------------------------------------------
 
@@ -50,6 +53,8 @@ const getDesignTokens = (mode) => ({
 
 export default function ThemeConfig({ children }) {
   const [mode, setMode] = React.useState('light');
+  const dispatch = useDispatch();
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const colorMode = React.useMemo(
     () => ({
@@ -69,6 +74,7 @@ export default function ThemeConfig({ children }) {
     // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // // @ts-ignore
     window.electron.ipcRenderer.once('receiveModeTheme', (data) => {
+      dispatch(SetTheme(data));
       // console.log(data);
       // setMode(data);
       window.electron.ipcRenderer.setTheme(data);
@@ -77,8 +83,10 @@ export default function ThemeConfig({ children }) {
     // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // // @ts-ignore
     window.electron.ipcRenderer.on('changedThemeMode', (data) => {
+      console.log('het', data);
       setMode(data);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update the theme only if the mode changes

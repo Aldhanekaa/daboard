@@ -1,4 +1,7 @@
 import * as React from 'react';
+
+import { Link as LinkRouter } from 'react-router-dom';
+
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -14,16 +17,48 @@ import {
   Dialog,
   DialogTitle,
   DialogActions,
+  Grid,
+  CardContent,
+  Card,
+  Link,
 } from '@mui/material';
+
 import AppsIcon from '@mui/icons-material/Apps';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ScienceIcon from '@mui/icons-material/Science';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 import { SetTheme } from '../global/actions/themeMode.action';
 import { RootStore } from '../global';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
 
 const HomePage = () => {
   const themeMode = useSelector((state: RootStore) => state.themeMode);
@@ -121,6 +156,54 @@ const HomePage = () => {
             <Tab icon={<ScienceIcon />} label="Labs" />
             <Tab icon={<AccountCircleIcon />} label="User System Information" />
           </Tabs>
+
+          <TabPanel value={tabValue} index={0}>
+            <Grid
+              container
+              spacing={{ xs: 2, md: 3 }}
+              columns={{ xs: 4, sm: 8, md: 12 }}
+            >
+              {[
+                {
+                  title: 'File Manager',
+                  desc: 'file manager app',
+                  icon: <FileCopyIcon />,
+                },
+              ].map((_, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <Grid item xs={2} sm={4} md={4} key={index}>
+                  <Card
+                    sx={{
+                      minWidth: 275,
+                      padding: '20px',
+                      backgroundColor:
+                        themeMode === 'dark' ? '#212B36' : '#fff',
+                    }}
+                  >
+                    <CardContent>
+                      <LinkRouter to="/file-manager">
+                        <Link href="/file-manager">
+                          <Typography variant="h3" component="div">
+                            {_.icon} {_.title}
+                          </Typography>
+                        </Link>
+                      </LinkRouter>
+
+                      <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                        {_.desc}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            Item Two
+          </TabPanel>
+          <TabPanel value={tabValue} index={2}>
+            Item Three
+          </TabPanel>
         </Box>
       </Container>
     </>

@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import ThemeConfig from './theme/index';
 
 import HomePage from './pages/home';
+import FileManager from './pages/fileManager';
 
 import ReduxStore from './global/index';
 
@@ -13,7 +14,10 @@ export default function App() {
       <ThemeConfig>
         <Router>
           <Switch>
-            <Route path="/" component={HomePage} />
+            <Route exact path="/" component={HomePage} />
+          </Switch>
+          <Switch>
+            <Route path="/file-manager" component={FileManager} />
           </Switch>
         </Router>
       </ThemeConfig>

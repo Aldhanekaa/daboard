@@ -19,7 +19,7 @@ export default function ComponentsOverrides(
 ): Components {
   return {
     ...merge(
-      Card(theme),
+      Card(theme, mode),
       Lists(),
       Paper(),
       Input(theme),
