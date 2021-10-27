@@ -68,7 +68,6 @@ export default function ThemeConfig({ children }) {
   React.useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    // window.electron.ipcRenderer.send('getModeTheme');
     window.electron.ipcRenderer.getTheme();
 
     // // eslint-disable-next-line @typescript-eslint/ban-ts-comment

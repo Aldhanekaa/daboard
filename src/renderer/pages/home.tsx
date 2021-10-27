@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Link as LinkRouter } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Container,
@@ -64,6 +65,8 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const HomePage = () => {
+  const [t] = useTranslation('index');
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -176,8 +179,7 @@ const HomePage = () => {
           </Stack>
 
           <Typography component="p" gutterBottom>
-            Welcome to Daboard App Manager! Multiple Apps in one desktop app,
-            a.k.a All in one App!
+            {t('greetings')}
           </Typography>
         </Box>
 

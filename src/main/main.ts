@@ -117,28 +117,38 @@ const createWindow = async () => {
       : 'en'
     : 'en';
 
-  mainSession.cookies.set({
-    name: 'localhost',
-    // eslint-disable-next-line no-nested-ternary
-    value: lang,
-    url: 'http://localhost/',
-    expirationDate: 9999999999,
-  });
+  await i18nConfig.changeLanguage(lang);
 
-  mainSession.cookies.set({
-    name: 'theme',
-    // eslint-disable-next-line no-nested-ternary
-    value: themeCookie[0]
-      ? // eslint-disable-next-line no-nested-ternary
-        themeCookie[0].value
-        ? themeCookie[0].value
-        : nativeTheme.shouldUseDarkColors
-        ? 'dark'
-        : 'light'
-      : 'dark',
-    url: 'http://localhost/',
-    expirationDate: 9999999999,
-  });
+  if (!langCookie[0]) {
+    mainSession.cookies.set({
+      name: 'lang',
+      // eslint-disable-next-line no-nested-ternary
+      value: lang,
+      url: 'http://localhost/',
+      expirationDate: 9999999999,
+    });
+  }
+
+  if (!themeCookie[0]) {
+    mainSession.cookies.set({
+      name: 'theme',
+      // eslint-disable-next-line no-nested-ternary
+      value: themeCookie[0]
+        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          // eslint-disable-next-line no-nested-ternary
+          themeCookie[0].value
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            themeCookie[0].value
+          : nativeTheme.shouldUseDarkColors
+          ? 'dark'
+          : 'light'
+        : 'dark',
+      url: 'http://localhost/',
+      expirationDate: 9999999999,
+    });
+  }
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -163,13 +173,20 @@ const createWindow = async () => {
 
   i18nConfig.on('languageChanged', () => {
     if (mainWindow) {
-      console.log('heyo!');
       menuBuilder = new MenuBuilder(
         mainWindow,
         config.languages,
         i18nConfig.language
       );
       menuBuilder.buildMenu();
+      mainSession.cookies.set({
+        name: 'lang',
+        // eslint-disable-next-line no-nested-ternary
+        value: i18nConfig.language,
+        url: 'http://localhost/',
+        expirationDate: 9999999999,
+      });
+      mainWindow.webContents.send('receive-initial-lang', i18nConfig.language);
     }
   });
 
@@ -191,9 +208,8 @@ const createWindow = async () => {
     event.reply('changedThemeMode', arg);
   });
 
-  ipcMain.on('get-initial-translations', () => {
-    // console.log(i18nConfig);
-    // event.reply('receive-initial-lang', i18nConfig);
+  ipcMain.on('get-initial-translations', async (event) => {
+    event.reply('receive-initial-lang', i18nConfig.language);
   });
 
   ipcMain.on('getModeTheme', async (event) => {

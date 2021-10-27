@@ -1,7 +1,7 @@
-import { join } from 'path';
+// import { join } from 'path';
 
 import i18n, { InitOptions } from 'i18next';
-import i18nextBackend from 'i18next-fs-backend';
+// import i18nextBackend from 'i18next-fs-backend';
 import config from './app.config';
 
 import en from './locales/en';
@@ -10,11 +10,6 @@ import id from './locales/id';
 const i18nextOptions: InitOptions = {
   backend: {
     jsonIndent: 2,
-
-    // path where resources get loaded from
-    loadPath: join(__dirname, './locales/{{lng}}/{{ns}}.json'),
-
-    addPath: join(__dirname, './locales/{{lng}}/{{ns}}.missing.json'),
   },
   interpolation: {
     escapeValue: false,
@@ -32,7 +27,7 @@ const i18nextOptions: InitOptions = {
   },
 };
 
-i18n.use(i18nextBackend);
+// i18n.use(i18nextBackend);
 // initialize if not already initialized
 if (!i18n.isInitialized) {
   i18n.init(i18nextOptions);
