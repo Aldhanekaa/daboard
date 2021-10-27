@@ -3,6 +3,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
+    getLanguage() {
+      ipcRenderer.send('get-initial-translations');
+    },
     getTheme() {
       ipcRenderer.send('getModeTheme');
     },
@@ -22,6 +25,7 @@ contextBridge.exposeInMainWorld('electron', {
         'ipc-example',
         'receiveModeTheme',
         'changedThemeMode',
+        'receive-initial-lang',
       ];
       if (validChannels.includes(channel)) {
         // Deliberately strip event as it includes `sender`
@@ -33,6 +37,7 @@ contextBridge.exposeInMainWorld('electron', {
         'ipc-example',
         'receiveModeTheme',
         'changedThemeMode',
+        'receive-initial-lang',
       ];
       if (validChannels.includes(channel)) {
         // Deliberately strip event as it includes `sender`

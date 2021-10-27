@@ -1,0 +1,13 @@
+{
+  "languages": {
+    "title": "language",
+    "id": "🇮🇩 Bahasa",
+    "en": "🇬🇧 EN-GB"
+  },
+  "KaizenBrowser": {
+    "about": "About KaizenBrowser",
+    "apps": "Apps",
+
+    "quit": "Quit App"
+  }
+}

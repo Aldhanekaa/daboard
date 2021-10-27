@@ -48,5 +48,22 @@ export default function ComponentsOverrides(
         },
       },
     },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#000',
+        },
+        list: {
+          backgroundColor: mode === 'dark' && '#161C24',
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        selected: {
+          backgroundColor: '#ddd',
+        },
+      },
+    },
   };
 }

@@ -65,7 +65,7 @@ const GlobalStylesDark = withStyles(() => ({
     body: {
       width: '100%',
       height: '100%',
-      backgroundColor: '#212121',
+      backgroundColor: '#161C24',
     },
     '#root': {
       width: '100%',

@@ -1,10 +1,13 @@
 import {
   app,
   Menu,
-  shell,
+  // shell
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron';
+import i18nConfig from '../configs/i18next.config';
+
+import t from './t';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -14,8 +17,35 @@ interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
 
-  constructor(mainWindow: BrowserWindow) {
+  langs: { title: string; id: string }[];
+
+  lang: string;
+
+  Languages: MenuItemConstructorOptions = {};
+
+  constructor(
+    mainWindow: BrowserWindow,
+    languages: { title: string; id: string }[],
+    lang: string
+  ) {
     this.mainWindow = mainWindow;
+    this.langs = languages;
+    this.lang = lang;
+
+    this.Languages = {
+      label: t('menu', 'languages.title'),
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      submenu: languages.map((lang) => {
+        return {
+          label: t('menu', `languages.${lang.id}`),
+          type: 'radio',
+          checked: this.lang === lang.id,
+          async click() {
+            await i18nConfig.changeLanguage(lang.id);
+          },
+        };
+      }),
+    };
   }
 
   buildMenu(): Menu {
@@ -57,26 +87,16 @@ export default class MenuBuilder {
       label: 'KaizenBrowser',
       submenu: [
         {
-          label: 'About KaizenBrowser',
+          label: t('menu', 'KaizenBrowser.about'),
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
-        { label: 'Services', submenu: [] },
+        { label: t('menu', 'KaizenBrowser.apps'), submenu: [] },
+        { type: 'separator' },
+
         { type: 'separator' },
         {
-          label: 'Hide KaizenBrowser',
-          accelerator: 'Command+H',
-          selector: 'hide:',
-        },
-        {
-          label: 'Hide Others',
-          accelerator: 'Command+Shift+H',
-          selector: 'hideOtherApplications:',
-        },
-        { label: 'Show All', selector: 'unhideAllApplications:' },
-        { type: 'separator' },
-        {
-          label: 'Quit',
+          label: t('menu', 'KaizenBrowser.quit'),
           accelerator: 'Command+Q',
           click: () => {
             app.quit();
@@ -151,37 +171,7 @@ export default class MenuBuilder {
         { label: 'Bring All to Front', selector: 'arrangeInFront:' },
       ],
     };
-    const subMenuHelp: MenuItemConstructorOptions = {
-      label: 'Help',
-      submenu: [
-        {
-          label: 'Learn More',
-          click() {
-            shell.openExternal('https://electronjs.org');
-          },
-        },
-        {
-          label: 'Documentation',
-          click() {
-            shell.openExternal(
-              'https://github.com/electron/electron/tree/main/docs#readme'
-            );
-          },
-        },
-        {
-          label: 'Community Discussions',
-          click() {
-            shell.openExternal('https://www.electronjs.org/community');
-          },
-        },
-        {
-          label: 'Search Issues',
-          click() {
-            shell.openExternal('https://github.com/electron/electron/issues');
-          },
-        },
-      ],
-    };
+    const subMenuHelp: MenuItemConstructorOptions = this.Languages;
 
     const subMenuView =
       process.env.NODE_ENV === 'development' ||
@@ -252,37 +242,7 @@ export default class MenuBuilder {
                 },
               ],
       },
-      {
-        label: 'Help',
-        submenu: [
-          {
-            label: 'Learn More',
-            click() {
-              shell.openExternal('https://electronjs.org');
-            },
-          },
-          {
-            label: 'Documentation',
-            click() {
-              shell.openExternal(
-                'https://github.com/electron/electron/tree/main/docs#readme'
-              );
-            },
-          },
-          {
-            label: 'Community Discussions',
-            click() {
-              shell.openExternal('https://www.electronjs.org/community');
-            },
-          },
-          {
-            label: 'Search Issues',
-            click() {
-              shell.openExternal('https://github.com/electron/electron/issues');
-            },
-          },
-        ],
-      },
+      this.Languages,
     ];
 
     return templateDefault;

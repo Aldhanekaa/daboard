@@ -11,9 +11,13 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
+
 import { app, BrowserWindow, shell, ipcMain, nativeTheme } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+
+import i18nConfig from '../configs/i18next.config';
+import config from '../configs/app.config';
 
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -63,8 +67,6 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-console.log(nativeTheme.shouldUseDarkColors);
-
 const createWindow = async () => {
   if (isDevelopment) {
     await installExtensions();
@@ -100,6 +102,29 @@ const createWindow = async () => {
     domain: 'localhost',
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const langCookie = await mainSession.cookies.get({
+    name: 'lang',
+    domain: 'localhost',
+  });
+
+  // eslint-disable-next-line no-nested-ternary
+  const lang = langCookie[0]
+    ? // eslint-disable-next-line no-nested-ternary
+      langCookie[0].value
+      ? langCookie[0].value
+      : 'en'
+    : 'en';
+
+  mainSession.cookies.set({
+    name: 'localhost',
+    // eslint-disable-next-line no-nested-ternary
+    value: lang,
+    url: 'http://localhost/',
+    expirationDate: 9999999999,
+  });
+
   mainSession.cookies.set({
     name: 'theme',
     // eslint-disable-next-line no-nested-ternary
@@ -129,9 +154,24 @@ const createWindow = async () => {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-
-  const menuBuilder = new MenuBuilder(mainWindow);
+  let menuBuilder = new MenuBuilder(
+    mainWindow,
+    config.languages,
+    i18nConfig.language
+  );
   menuBuilder.buildMenu();
+
+  i18nConfig.on('languageChanged', () => {
+    if (mainWindow) {
+      console.log('heyo!');
+      menuBuilder = new MenuBuilder(
+        mainWindow,
+        config.languages,
+        i18nConfig.language
+      );
+      menuBuilder.buildMenu();
+    }
+  });
 
   // Open urls in the user's browser
   mainWindow.webContents.on('new-window', (event, url) => {
@@ -149,6 +189,11 @@ const createWindow = async () => {
     });
     // console.log('bruhh', arg);
     event.reply('changedThemeMode', arg);
+  });
+
+  ipcMain.on('get-initial-translations', () => {
+    // console.log(i18nConfig);
+    // event.reply('receive-initial-lang', i18nConfig);
   });
 
   ipcMain.on('getModeTheme', async (event) => {

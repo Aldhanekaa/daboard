@@ -21,6 +21,8 @@ import {
   CardContent,
   Card,
   Link,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 
 import AppsIcon from '@mui/icons-material/Apps';
@@ -30,6 +32,7 @@ import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import TranslateIcon from '@mui/icons-material/Translate';
 
 import { SetTheme } from '../global/actions/themeMode.action';
 import { RootStore } from '../global';
@@ -61,6 +64,15 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const HomePage = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const themeMode = useSelector((state: RootStore) => state.themeMode);
   const dispatch = useDispatch();
 
@@ -135,6 +147,31 @@ const HomePage = () => {
                   <PowerSettingsNewIcon />
                 </IconButton>
               </Tooltip>
+              <div>
+                <Tooltip title="Settings">
+                  <IconButton
+                    sx={{ width: '60px', height: '60px' }}
+                    aria-label="shutdown"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleClick}
+                  >
+                    <TranslateIcon />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                  }}
+                  elevation={3}
+                >
+                  <MenuItem selected>🇮🇩 Bahasa</MenuItem>
+                  <MenuItem>🇬🇧 EN-GB</MenuItem>
+                </Menu>
+              </div>
             </Stack>
           </Stack>
 
