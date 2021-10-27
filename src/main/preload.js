@@ -10,8 +10,10 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.send('getModeTheme');
     },
     setTheme(mode) {
-      console.log('yoo!');
       ipcRenderer.send('setTheme', mode);
+    },
+    setLang(lang) {
+      ipcRenderer.send('setLang', lang);
     },
     myPing() {
       ipcRenderer.send('ipc-example', 'ping');

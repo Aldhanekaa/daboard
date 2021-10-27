@@ -196,6 +196,17 @@ const createWindow = async () => {
     shell.openExternal(url);
   });
 
+  ipcMain.on('setLang', (event, arg) => {
+    i18nConfig.changeLanguage(arg);
+    mainSession.cookies.set({
+      name: 'lang',
+      // eslint-disable-next-line no-nested-ternary
+      value: arg,
+      url: 'http://localhost/',
+      expirationDate: 9999999999,
+    });
+    event.reply('receive-initial-lang', arg);
+  });
   ipcMain.on('setTheme', (event, arg) => {
     mainSession.cookies.set({
       name: 'theme',

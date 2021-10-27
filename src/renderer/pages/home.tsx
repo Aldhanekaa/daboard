@@ -65,7 +65,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const HomePage = () => {
-  const [t] = useTranslation('index');
+  const [t, i18n] = useTranslation('index');
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -88,6 +88,12 @@ const HomePage = () => {
 
   const handleCloseQuitAppDialog = () => {
     setOpenQuitAppDialog(false);
+  };
+
+  const SetLanguage = () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.electron.ipcRenderer.setLang(i18n.language === 'id' ? 'en' : 'id');
   };
 
   return (
@@ -171,8 +177,18 @@ const HomePage = () => {
                   }}
                   elevation={3}
                 >
-                  <MenuItem selected>🇮🇩 Bahasa</MenuItem>
-                  <MenuItem>🇬🇧 EN-GB</MenuItem>
+                  <MenuItem
+                    onClick={SetLanguage}
+                    selected={i18n.language === 'id'}
+                  >
+                    🇮🇩 Bahasa
+                  </MenuItem>
+                  <MenuItem
+                    onClick={SetLanguage}
+                    selected={i18n.language === 'en'}
+                  >
+                    🇬🇧 EN-GB
+                  </MenuItem>
                 </Menu>
               </div>
             </Stack>
