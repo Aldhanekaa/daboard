@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -19,15 +19,15 @@ jobs:
         with:
           node-version: 15
 
-      - name: yarn install
+      - name: npm install
         run: |
-          yarn install
+          npm install
 
-      - name: yarn test
+      - name: npm test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          yarn package
-          yarn lint
+          npm run package
+          npm run lint
           npm exec tsc
-          yarn test
+          npm test
